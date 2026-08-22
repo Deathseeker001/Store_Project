@@ -1,8 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer;
+using Store_Project.Persistence.Context;
+using Store_Project_Application.Interfaces.Contexts;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
 
+string contectionString = @"Data Source= GHAZALEH\SQLEXPRESS; Initial Catalog=Store_ProjectDb; Integrated Security=True; TrustServerCertificate=True;";
+builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<DataBaseContext>(options =>
+    options.UseSqlServer(contectionString)
+);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
