@@ -2,12 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Store_Project.Persistence.Context;
 using Store_Project_Application.Interfaces.Contexts;
-
+using Store_Project_Application.Services.Users.Queries.GetUsers;
+using Store_Project_Application.Services.Users.Queries.GetRoles;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
-
+builder.Services.AddScoped<IGetUsersService, GetUsersService>();
+builder.Services.AddScoped<IGetRolesService, GetRolesService>();
 string contectionString = @"Data Source= GHAZALEH\SQLEXPRESS; Initial Catalog=Store_ProjectDb; Integrated Security=True; TrustServerCertificate=True;";
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DataBaseContext>(options =>
