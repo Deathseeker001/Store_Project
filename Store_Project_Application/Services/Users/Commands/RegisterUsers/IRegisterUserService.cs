@@ -9,74 +9,143 @@ using Store_Project_Application.Interfaces.Contexts;
 
 namespace Store_Project_Application.Services.Users.Commands.RegisterUsers
 {
-    public interface IRgegisterUserService
+    public interface IRegisterUserService
     {
-        ResultDTO<ResultRgegisterUserDto> Execute(RequestRgegisterUserDto request);
+        ResultDTO<ResultRegisterUserDTO> Execute(RequestRegisterUserDTO request);
     }
 
-    public class RgegisterUserService : IRgegisterUserService
+    public class RegisterUserService : IRegisterUserService
     {
         private readonly IDataBaseContext _context;
 
-        public RgegisterUserService(IDataBaseContext context)
+        public RegisterUserService(IDataBaseContext context)
         {
             _context = context;
         }
-        public ResultDTO<ResultRgegisterUserDto> Execute(RequestRgegisterUserDto request)
+        public ResultDTO<ResultRegisterUserDTO> Execute(RequestRegisterUserDTO request)
         {
-            User user = new User()
+            try
             {
-                Email = request.Email,
-                FullName = request.FullName,
-
-            };
-            List<UserInRole> userInRoles = new List<UserInRole>();
-
-            foreach (var item in request.roles)
-            {
-                var roles = _context.Roles.Find(item.Id);
-                userInRoles.Add(new UserInRole
+                if (string.IsNullOrWhiteSpace(request.Email))
                 {
-                    Role = roles,
-                    RoleId = roles.Id,
-                    User = user,
-                    UserId = user.Id,
-                });
+                    return new ResultDTO<ResultRegisterUserDTO>()
+                    {
+                        Data = new ResultRegisterUserDTO()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "پست الکترونیک را وارد نمایید"
+                    };
+                }
+
+                if (string.IsNullOrWhiteSpace(request.FullName))
+                {
+                    return new ResultDTO<ResultRegisterUserDTO>()
+                    {
+                        Data = new ResultRegisterUserDTO()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "نام را وارد نمایید"
+                    };
+                }
+                if (string.IsNullOrWhiteSpace(request.Password))
+                {
+                    return new ResultDTO<ResultRegisterUserDTO>()
+                    {
+                        Data = new ResultRegisterUserDTO()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "رمز عبور را وارد نمایید"
+                    };
+                }
+                if (request.Password != request.RePasword)
+                {
+                    return new ResultDTO<ResultRegisterUserDTO>()
+                    {
+                        Data = new ResultRegisterUserDTO()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "رمز عبور و تکرار آن برابر نیست"
+                    };
+                }
+
+                User user = new User()
+                {
+                    Email = request.Email,
+                    FullName = request.FullName,
+                    Password = HashPassword.Execute(request.Password),
+                };
+
+                List<UserInRole> userInRoles = new List<UserInRole>();
+
+                foreach (var item in request.roles)
+                {
+                    var roles = _context.Roles.Find(item.Id);
+                    userInRoles.Add(new UserInRole
+                    {
+                        Role = roles,
+                        RoleId = roles.Id,
+                        User = user,
+                        UserId = user.Id,
+                    });
+                }
+                user.UserInRoles = userInRoles;
+
+                _context.Users.Add(user);
+
+                _context.SaveChanges();
+
+                return new ResultDTO<ResultRegisterUserDTO>()
+                {
+                    Data = new ResultRegisterUserDTO()
+                    {
+                        UserId = user.Id,
+
+                    },
+                    IsSuccess = true,
+                    Message = "ثبت نام کاربر انجام شد",
+                };
             }
-            user.UserInRoles = userInRoles;
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return new ResultDTO<ResultRgegisterUserDto>()
+            catch (Exception)
             {
-                Data = new ResultRgegisterUserDto()
+                return new ResultDTO<ResultRegisterUserDTO>()
                 {
-                    UserId = user.Id,
-
-                },
-                IsSuccess = true,
-                Message = "ثبت نام کاربر انجام شد",
-            };
+                    Data = new ResultRegisterUserDTO()
+                    {
+                        UserId = 0,
+                    },
+                    IsSuccess = false,
+                    Message = "ثبت نام انجام نشد !"
+                };
+            }
         }
     }
-    public class RequestRgegisterUserDto
+    public class RequestRegisterUserDTO
     {
         public string FullName { get; set; }
         public string Email { get; set; }
-
-        public List<RolesInRgegisterUserDto> roles { get; set; }
+        public string Password { get; set; }
+        public string RePasword { get; set; }
+        public List<RolesInRegisterUserDTO> roles { get; set; }
     }
 
-    public class RolesInRgegisterUserDto
+    public class RolesInRegisterUserDTO
     {
         public long Id { get; set; }
     }
 
-    public class ResultRgegisterUserDto
+    public class ResultRegisterUserDTO
     {
         public long UserId { get; set; }
 
     }
+
 
 }
