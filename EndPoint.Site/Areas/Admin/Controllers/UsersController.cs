@@ -8,8 +8,9 @@ using Store_Project_Application.Services.Users.Queries.GetUsers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Store_Project_Application.Services.Users.Commands.RegisterUsers;
-using Store_Project_Application.Services.Users.Commands.UserStatusChnage;
+using Store_Project_Application.Services.Users.Commands.UserStatusChange;
 using Store_Project_Application.Services.Users.Commands.EditUser;
+
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {

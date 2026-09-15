@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Store_Project.Common;
 using Store_Project.Common.DTO;
 using Store_Project.Domain.Entities.Users;
 using Store_Project_Application.Interfaces.Contexts;
@@ -75,12 +77,32 @@ namespace Store_Project_Application.Services.Users.Commands.RegisterUsers
                         Message = "رمز عبور و تکرار آن برابر نیست"
                     };
                 }
+                string emailRegex = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
+
+                var match = Regex.Match(request.Email, emailRegex, RegexOptions.IgnoreCase);
+                if (!match.Success)
+                {
+                    return new ResultDTO<ResultRegisterUserDTO>()
+                    {
+                        Data = new ResultRegisterUserDTO()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "ایمیل خودرا به درستی وارد نمایید"
+                    };
+                }
+
+
+                var passwordHasher = new PasswordHasher();
+                var hashedPassword = passwordHasher.HashPassword(request.Password);
 
                 User user = new User()
                 {
                     Email = request.Email,
                     FullName = request.FullName,
-                    Password = HashPassword.Execute(request.Password),
+                    Password = hashedPassword,
+                    IsActive = true,
                 };
 
                 List<UserInRole> userInRoles = new List<UserInRole>();
@@ -107,7 +129,6 @@ namespace Store_Project_Application.Services.Users.Commands.RegisterUsers
                     Data = new ResultRegisterUserDTO()
                     {
                         UserId = user.Id,
-
                     },
                     IsSuccess = true,
                     Message = "ثبت نام کاربر انجام شد",
@@ -144,8 +165,6 @@ namespace Store_Project_Application.Services.Users.Commands.RegisterUsers
     public class ResultRegisterUserDTO
     {
         public long UserId { get; set; }
-
     }
-
 
 }

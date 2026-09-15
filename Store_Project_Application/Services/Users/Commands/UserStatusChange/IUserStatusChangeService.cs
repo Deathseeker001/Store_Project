@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Store_Project_Application.Services.Users.Commands.UserStatusChnage
+namespace Store_Project_Application.Services.Users.Commands.UserStatusChange
 {
     public interface IUserSatusChangeService
     {
