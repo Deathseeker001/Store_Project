@@ -20,7 +20,6 @@ namespace Store_Project_Application.Services.Users.Commands.RemoveUsers
 
         public ResultDTO Execute(long UserId)
         {
-
             var user = _context.Users.Find(UserId);
             if (user == null)
             {

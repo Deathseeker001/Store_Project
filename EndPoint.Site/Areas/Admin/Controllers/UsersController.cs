@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Store_Project_Application.Services.Users.Commands.RegisterUsers;
 using Store_Project_Application.Services.Users.Commands.UserStatusChange;
 using Store_Project_Application.Services.Users.Commands.EditUser;
+using Store_Project_Application.Services.Users.Commands.RemoveUsers;
 
 
 namespace EndPoint.Site.Areas.Admin.Controllers
@@ -22,12 +23,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IRegisterUserService _registerUserService;
         private readonly IUserSatusChangeService _userSatusChangeService;
         private readonly IEditUserService _editUserService;
+        private readonly IRemoveUserService _removeUserService;
         public UsersController(
             IGetUsersService getUsersService,
             IGetRolesService getRolesService, 
             IRegisterUserService registerUserService,
             IUserSatusChangeService userSatusChangeService,
-            IEditUserService editUserService
+            IEditUserService editUserService,
+            IRemoveUserService removeUserService
             )
         {
             _getUsersService = getUsersService;
@@ -35,6 +38,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _registerUserService = registerUserService;
             _userSatusChangeService = userSatusChangeService;
             _editUserService = editUserService;
+            _removeUserService = removeUserService;
         }
        
 
@@ -56,7 +60,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return View();
         }
 
-
         [HttpPost]
         public IActionResult Create(string Email, string FullName, long RoleId, string Password, string RePassword)
         {
@@ -75,6 +78,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 RePasword = RePassword,
             });
             return Json(result);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(long UserId)
+        {
+            return Json(_removeUserService.Execute(UserId));
         }
 
         [HttpPost]
