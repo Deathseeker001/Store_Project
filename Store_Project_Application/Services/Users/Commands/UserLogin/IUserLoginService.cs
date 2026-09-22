@@ -13,7 +13,7 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
 {
     public interface IUserLoginService
     {
-        ResultDTO<ResultUserloginDto> Execute(string Username, string Password);
+        ResultDTO<ResultUserloginDTO> Execute(string Username, string Password);
     }
 
     public class UserLoginService : IUserLoginService
@@ -23,14 +23,14 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
         {
             _context = context;
         }
-        public ResultDTO<ResultUserloginDto> Execute(string Username, string Password)
+        public ResultDTO<ResultUserloginDTO> Execute(string Username, string Password)
         {
 
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                return new ResultDTO<ResultUserloginDto>()
+                return new ResultDTO<ResultUserloginDTO>()
                 {
-                    Data = new ResultUserloginDto()
+                    Data = new ResultUserloginDTO()
                     {
 
                     },
@@ -38,7 +38,6 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
                     Message = "نام کاربری و رمز عبور را وارد نمایید",
                 };
             }
-
 
 
             var user = _context.Users
@@ -50,14 +49,14 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
 
             if (user == null)
             {
-                return new ResultDTO<ResultUserloginDto>()
+                return new ResultDTO<ResultUserloginDTO>()
                 {
-                    Data = new ResultUserloginDto()
+                    Data = new ResultUserloginDTO()
                     {
 
                     },
                     IsSuccess = false,
-                    Message = "کاربری با این ایمیل در سایت فروشگاه باگتو ثبت نام نکرده است",
+                    Message = "کاربری با این ایمیل در سایت فروشگاه ثبت نام نکرده است",
                 };
             }
 
@@ -65,9 +64,9 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
             bool resultVerifyPassword = passwordHasher.VerifyPassword(user.Password, Password);
             if (resultVerifyPassword == false)
             {
-                return new ResultDTO<ResultUserloginDto>()
+                return new ResultDTO<ResultUserloginDTO>()
                 {
-                    Data = new ResultUserloginDto()
+                    Data = new ResultUserloginDTO()
                     {
 
                     },
@@ -84,9 +83,9 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
             }
 
 
-            return new ResultDTO<ResultUserloginDto>()
+            return new ResultDTO<ResultUserloginDTO>()
             {
-                Data = new ResultUserloginDto()
+                Data = new ResultUserloginDTO()
                 {
                     Roles = roles,
                     UserId = user.Id,
@@ -100,7 +99,7 @@ namespace Store_Project_Application.Services.Users.Commands.UserLogin
         }
     }
 
-    public class ResultUserloginDto
+    public class ResultUserloginDTO
     {
         public long UserId { get; set; }
         public string Roles { get; set; }
